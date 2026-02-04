@@ -3,130 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Chat - Like Gemini (Free)</title>
+  <title>AI Chat - Like Gemini (Free GLM-4.5-Air)</title>
   <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #e0f2fe, #dbeafe);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-      box-sizing: border-box;
-      color: #111827;
-    }
-    .container {
-      width: 100%;
-      max-width: 880px;
-      height: 92vh;
-      background: white;
-      border-radius: 24px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    .header {
-      background: #2563eb;
-      color: white;
-      padding: 18px 24px;
-      font-size: 1.4rem;
-      font-weight: 600;
-      text-align: center;
-    }
-    .chat {
-      flex: 1;
-      padding: 24px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-    .msg {
-      max-width: 82%;
-      padding: 14px 20px;
-      border-radius: 22px;
-      line-height: 1.5;
-      font-size: 1.05rem;
-    }
-    .user-msg {
-      align-self: flex-end;
-      background: #bfdbfe;
-      color: #1e40af;
-      border-bottom-right-radius: 6px;
-    }
-    .ai-msg {
-      align-self: flex-start;
-      background: #f3f4f6;
-      color: #111827;
-      border-bottom-left-radius: 6px;
-    }
-    .error-msg {
-      align-self: center;
-      background: #fee2e2;
-      color: #b91c1c;
-      padding: 14px 22px;
-      border-radius: 14px;
-      font-weight: 500;
-      max-width: 90%;
-      white-space: pre-wrap;
-    }
-    .typing {
-      align-self: flex-start;
-      color: #6b7280;
-      font-style: italic;
-      padding: 14px 20px;
-    }
-    .input-area {
-      padding: 18px 24px;
-      border-top: 1px solid #e5e7eb;
-      background: white;
-      display: flex;
-      gap: 14px;
-    }
-    #input {
-      flex: 1;
-      padding: 14px 20px;
-      border: 1px solid #d1d5db;
-      border-radius: 9999px;
-      font-size: 1.05rem;
-      outline: none;
-    }
-    #input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
-    }
-    #send {
-      padding: 14px 34px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 9999px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    #send:hover:not(:disabled) {
-      background: #1d4ed8;
-    }
-    #send:disabled {
-      background: #93c5fd;
-      cursor: not-allowed;
-    }
-    .chat::-webkit-scrollbar {
-      width: 8px;
-    }
-    .chat::-webkit-scrollbar-thumb {
-      background: #9ca3af;
-      border-radius: 4px;
-    }
+    body { margin:0; font-family: system-ui, sans-serif; background: linear-gradient(135deg, #e0f2fe, #dbeafe); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:16px; color:#111827; }
+    .container { width:100%; max-width:880px; height:92vh; background:white; border-radius:24px; box-shadow:0 12px 40px rgba(0,0,0,0.15); overflow:hidden; display:flex; flex-direction:column; }
+    .header { background:#2563eb; color:white; padding:18px 24px; font-size:1.4rem; font-weight:600; text-align:center; }
+    .chat { flex:1; padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:18px; }
+    .msg { max-width:82%; padding:14px 20px; border-radius:22px; line-height:1.5; font-size:1.05rem; }
+    .user-msg { align-self:flex-end; background:#bfdbfe; color:#1e40af; border-bottom-right-radius:6px; }
+    .ai-msg { align-self:flex-start; background:#f3f4f6; color:#111827; border-bottom-left-radius:6px; }
+    .error-msg { align-self:center; background:#fee2e2; color:#b91c1c; padding:14px 22px; border-radius:14px; font-weight:500; max-width:90%; white-space:pre-wrap; }
+    .typing { align-self:flex-start; color:#6b7280; font-style:italic; padding:14px 20px; }
+    .input-area { padding:18px 24px; border-top:1px solid #e5e7eb; background:white; display:flex; gap:14px; }
+    #input { flex:1; padding:14px 20px; border:1px solid #d1d5db; border-radius:9999px; font-size:1.05rem; outline:none; }
+    #input:focus { border-color:#2563eb; box-shadow:0 0 0 4px rgba(37,99,235,0.15); }
+    #send { padding:14px 34px; background:#2563eb; color:white; border:none; border-radius:9999px; font-weight:600; cursor:pointer; }
+    #send:hover:not(:disabled) { background:#1d4ed8; }
+    #send:disabled { background:#93c5fd; cursor:not-allowed; }
+    .chat::-webkit-scrollbar { width:8px; }
+    .chat::-webkit-scrollbar-thumb { background:#9ca3af; border-radius:4px; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <div class="header">AI Chat - Like Gemini (Free)</div>
+    <div class="header">AI Chat - GLM-4.5-Air (Free)</div>
     <div class="chat" id="chat"></div>
     <div class="input-area">
       <input id="input" type="text" placeholder="Ask me anything..." autocomplete="off"/>
@@ -136,15 +37,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
-    // === CONFIG ===
     const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-    const API_KEY = "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"; // Replace with one of YOUR keys below if needed
-    const MODEL = "arcee-ai/trinity-large-preview:free";  // Top free model right now
-
-    // You can also try these other free ones:
-    // "tngtech/deepseek-r1t2-chimera:free"
-    // "z-ai/glm-4.5-air:free"
-    // "openrouter/free"  ← random free model
+    const API_KEY = "sk-or-v1-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // ← PASTE YOUR **NEW** KEY HERE
+    const MODEL = "z-ai/glm-4.5-air:free"; // Confirmed free & good quality
 
     let messages = [
       { role: "system", content: "You are a helpful, friendly, and intelligent AI assistant." }
@@ -248,7 +143,7 @@
 
       } catch (err) {
         console.error(err);
-        addMsg("assistant", `Error: ${err.message}\n\nFixes:\n- Try a different model from the list above\n- Use one of your other keys (e.g. sk-or-v1-... from screenshot)\n- Check openrouter.ai/models?q=free for latest free models`, true);
+        addMsg("assistant", `Error: ${err.message}\n\nQuick fixes:\n1. Use a **NEW** API key (generate at openrouter.ai/keys)\n2. Try model: tngtech/deepseek-r1t2-chimera:free or arcee-ai/trinity-large-preview:free\n3. Test in incognito or different network/VPN`, true);
       } finally {
         hideTyping();
         sendBtn.disabled = false;
@@ -265,7 +160,7 @@
       }
     };
 
-    addMsg("assistant", "Hello! I'm your free AI assistant (powered by OpenRouter).\nAsk me anything! 🚀");
+    addMsg("assistant", "Hello! This chat uses **GLM-4.5-Air (free)** — fast and smart.\nPaste your **new** API key above and try sending a message! 🚀");
   </script>
 </body>
 </html>
