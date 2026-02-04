@@ -3,249 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat App - Powered by OpenRouter</title>
+    <title>AI Chat - Powered by OpenRouter (Free)</title>
     <style>
-        /* Professional styling inspired by Gemini's clean, modern chat UI */
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f4f8;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #202124;
+            min-height: 100vh;
+            color: #1f2937;
         }
-
         #chat-app {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             height: 90vh;
-            background-color: white;
+            background: white;
             border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-
-        #chat-header {
+        #header {
             padding: 16px 24px;
-            background-color: #4285f4;
+            background: #3b82f6;
             color: white;
-            font-size: 20px;
-            font-weight: 500;
+            font-size: 1.4rem;
+            font-weight: 600;
             text-align: center;
-            border-bottom: 1px solid #dadce0;
         }
-
         #chat-container {
             flex: 1;
-            padding: 24px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
-
         .message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 20px;
-            line-height: 1.4;
-            word-wrap: break-word;
+            max-width: 82%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            line-height: 1.45;
+            font-size: 1rem;
         }
-
-        .user-message {
+        .user {
             align-self: flex-end;
-            background-color: #d2e3fc;
-            color: #202124;
-            border-bottom-right-radius: 4px;
+            background: #bfdbfe;
+            color: #1e40af;
+            border-bottom-right-radius: 6px;
         }
-
-        .assistant-message {
+        .assistant {
             align-self: flex-start;
-            background-color: #e8f0fe;
-            color: #202124;
-            border-bottom-left-radius: 4px;
+            background: #e5e7eb;
+            color: #111827;
+            border-bottom-left-radius: 6px;
         }
-
-        .typing-indicator {
+        .error-msg {
+            align-self: center;
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 20px;
+            border-radius: 12px;
+            max-width: 90%;
+        }
+        .typing {
             align-self: flex-start;
-            color: #5f6368;
+            color: #6b7280;
             font-style: italic;
+            padding: 12px;
         }
-
-        #input-container {
-            display: flex;
+        #input-area {
             padding: 16px 24px;
-            border-top: 1px solid #dadce0;
-            background-color: white;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+            display: flex;
+            gap: 12px;
         }
-
         #user-input {
             flex: 1;
-            padding: 12px 16px;
-            border: 1px solid #dadce0;
-            border-radius: 24px;
-            font-size: 16px;
+            padding: 12px 18px;
+            border: 1px solid #d1d5db;
+            border-radius: 9999px;
+            font-size: 1rem;
             outline: none;
-            transition: border-color 0.2s;
         }
-
         #user-input:focus {
-            border-color: #4285f4;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
         }
-
         #send-btn {
-            margin-left: 12px;
-            padding: 12px 24px;
-            background-color: #4285f4;
+            padding: 12px 28px;
+            background: #3b82f6;
             color: white;
             border: none;
-            border-radius: 24px;
-            font-size: 16px;
+            border-radius: 9999px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
         }
-
-        #send-btn:hover {
-            background-color: #3367d6;
+        #send-btn:hover:not(:disabled) {
+            background: #2563eb;
         }
-
         #send-btn:disabled {
-            background-color: #a8c7fa;
+            background: #93c5fd;
             cursor: not-allowed;
         }
-
-        /* Scrollbar styling */
-        #chat-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        #chat-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        #chat-container::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-
-        #chat-container::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-
-        /* Markdown basic support */
-        .message p { margin: 8px 0; }
-        .message strong { font-weight: bold; }
-        .message em { font-style: italic; }
-        .message code { background: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
-        .message pre { background: #f4f4f4; padding: 12px; border-radius: 8px; overflow-x: auto; }
-        .message ul, .message ol { padding-left: 20px; }
-        .message li { margin: 4px 0; }
+        /* Scrollbar */
+        #chat-container::-webkit-scrollbar { width: 6px; }
+        #chat-container::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 3px; }
     </style>
 </head>
 <body>
     <div id="chat-app">
-        <div id="chat-header">AI Chat - Like Gemini</div>
+        <div id="header">AI Chat Assistant (Free)</div>
         <div id="chat-container"></div>
-        <div id="input-container">
-            <input type="text" id="user-input" placeholder="Type your message...">
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Ask anything..." autocomplete="off">
             <button id="send-btn">Send</button>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        // Configuration
+        // === CONFIG ===
         const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-        const API_KEY = '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'; // WARNING: Hardcoding API keys client-side is insecure for production. Use a backend proxy in real apps.
-        const MODEL = 'google/gemini-flash-1.5'; // Using a model available on OpenRouter (adjust if needed; check openrouter.ai/models for free options like 'deepseek/deepseek-chat')
+        const API_KEY = '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';
+        const MODEL = 'deepseek/deepseek-chat-v3-0324:free'; // Confirmed free & strong model (Feb 2026)
 
-        // Chat history
-        let messages = [];
+        let messages = [
+            { role: 'system', content: 'You are a helpful, friendly, and intelligent AI assistant.' }
+        ];
 
-        // DOM elements
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
 
-        // Function to add message to chat
-        function addMessage(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', role === 'user' ? 'user-message' : 'assistant-message');
-            messageDiv.innerHTML = marked.parse(content); // Using marked for markdown (loaded via CDN below)
-            chatContainer.appendChild(messageDiv);
+        // Add message to UI
+        function addMessage(role, content, isError = false) {
+            const div = document.createElement('div');
+            div.className = `message ${role} ${isError ? 'error-msg' : ''}`;
+            div.innerHTML = isError ? content : marked.parse(content);
+            chatContainer.appendChild(div);
             chatContainer.scrollTop = chatContainer.scrollHeight;
-            return messageDiv;
+            return div;
         }
 
-        // Function to show typing indicator
-        function showTypingIndicator() {
-            const typingDiv = document.createElement('div');
-            typingDiv.classList.add('typing-indicator');
+        // Show typing
+        let typingDiv = null;
+        function showTyping() {
+            if (typingDiv) return;
+            typingDiv = document.createElement('div');
+            typingDiv.className = 'typing';
             typingDiv.textContent = 'AI is thinking...';
             chatContainer.appendChild(typingDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
-            return typingDiv;
+        }
+        function hideTyping() {
+            if (typingDiv) {
+                typingDiv.remove();
+                typingDiv = null;
+            }
         }
 
-        // Function to remove typing indicator
-        function removeTypingIndicator(typingDiv) {
-            if (typingDiv) typingDiv.remove();
-        }
-
-        // Handle send message
+        // Main send function
         async function sendMessage() {
-            const content = userInput.value.trim();
-            if (!content) return;
+            const text = userInput.value.trim();
+            if (!text) return;
 
-            // Disable input while processing
             sendBtn.disabled = true;
             userInput.disabled = true;
             userInput.value = '';
 
-            // Add user message
-            addMessage('user', content);
-            messages.push({ role: 'user', content });
+            addMessage('user', text);
+            messages.push({ role: 'user', content: text });
 
-            // Show typing
-            const typingDiv = showTypingIndicator();
+            showTyping();
 
             try {
-                const response = await fetch(API_URL, {
+                const res = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`,
-                        // Optional headers for OpenRouter attribution
-                        'HTTP-Referer': window.location.href,
-                        'X-Title': 'AI Chat App'
+                        'Authorization': `Bearer ${API_KEY}`
                     },
                     body: JSON.stringify({
                         model: MODEL,
                         messages: messages,
-                        stream: true // Enable streaming for real-time responses
+                        stream: true
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.statusText}`);
+                if (!res.ok) {
+                    const err = await res.text();
+                    throw new Error(`API Error (${res.status}): ${err}`);
                 }
 
-                // Handle streaming response
-                const reader = response.body.getReader();
+                const reader = res.body.getReader();
                 const decoder = new TextDecoder();
-                let assistantMessageDiv = null;
                 let assistantContent = '';
+                let assistantDiv = null;
+
+                hideTyping();
 
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
 
                     const chunk = decoder.decode(value);
-                    const lines = chunk.split('\n');
+                    const lines = chunk.split('\n').filter(Boolean);
 
                     for (const line of lines) {
                         if (line.startsWith('data: ')) {
@@ -254,62 +221,47 @@
 
                             try {
                                 const parsed = JSON.parse(data);
-                                const delta = parsed.choices[0].delta.content;
+                                const delta = parsed.choices?.[0]?.delta?.content;
                                 if (delta) {
-                                    // Remove typing once streaming starts
-                                    removeTypingIndicator(typingDiv);
-
-                                    if (!assistantMessageDiv) {
-                                        assistantMessageDiv = addMessage('assistant', delta);
+                                    assistantContent += delta;
+                                    if (!assistantDiv) {
+                                        assistantDiv = addMessage('assistant', assistantContent);
                                     } else {
-                                        assistantContent += delta;
-                                        assistantMessageDiv.innerHTML = marked.parse(assistantContent);
+                                        assistantDiv.innerHTML = marked.parse(assistantContent);
                                     }
+                                    chatContainer.scrollTop = chatContainer.scrollHeight;
                                 }
-                            } catch (e) {
-                                console.error('Parse error:', e);
-                            }
+                            } catch {}
                         }
                     }
                 }
 
-                // Add to history
                 if (assistantContent) {
                     messages.push({ role: 'assistant', content: assistantContent });
                 }
 
-                // Remove typing if still there
-                removeTypingIndicator(typingDiv);
-
-            } catch (error) {
-                console.error('Error:', error);
-                addMessage('assistant', 'Sorry, an error occurred. Please try again.');
-                removeTypingIndicator(typingDiv);
+            } catch (err) {
+                console.error(err);
+                addMessage('assistant', `Error: ${err.message}\n\nPlease check your API key or try again later.`, true);
             } finally {
+                hideTyping();
                 sendBtn.disabled = false;
                 userInput.disabled = false;
                 userInput.focus();
             }
         }
 
-        // Event listeners
+        // Events
         sendBtn.addEventListener('click', sendMessage);
-        userInput.addEventListener('keypress', (e) => {
+        userInput.addEventListener('keypress', e => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
         });
 
-        // Load marked.js for markdown rendering (CDN for simplicity in one file)
-        const markedScript = document.createElement('script');
-        markedScript.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-        document.head.appendChild(markedScript);
-
-        // Initial welcome message
-        window.addEventListener('load', () => {
-            addMessage('assistant', 'Hello! I\'m an AI chat assistant powered by OpenRouter. How can I help you today?');
-        });
+        // Welcome
+        addMessage('assistant', 'Hi! I\'m your free AI assistant powered by OpenRouter.\nAsk me anything! 🚀');
     </script>
 </body>
 </html>
