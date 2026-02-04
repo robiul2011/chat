@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Chat - Like Gemini (Free GLM-4.5-Air)</title>
+  <title>AI Chat - GLM-4.5-Air (Free)</title>
   <style>
-    body { margin:0; font-family: system-ui, sans-serif; background: linear-gradient(135deg, #e0f2fe, #dbeafe); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:16px; color:#111827; }
+    body { margin:0; font-family:system-ui,sans-serif; background:linear-gradient(135deg,#e0f2fe,#dbeafe); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:16px; color:#111827; }
     .container { width:100%; max-width:880px; height:92vh; background:white; border-radius:24px; box-shadow:0 12px 40px rgba(0,0,0,0.15); overflow:hidden; display:flex; flex-direction:column; }
     .header { background:#2563eb; color:white; padding:18px 24px; font-size:1.4rem; font-weight:600; text-align:center; }
     .chat { flex:1; padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:18px; }
@@ -25,12 +25,11 @@
   </style>
 </head>
 <body>
-
   <div class="container">
     <div class="header">AI Chat - GLM-4.5-Air (Free)</div>
     <div class="chat" id="chat"></div>
     <div class="input-area">
-      <input id="input" type="text" placeholder="Ask me anything..." autocomplete="off"/>
+      <input id="input" type="text" placeholder="Ask anything..." autocomplete="off"/>
       <button id="send">Send</button>
     </div>
   </div>
@@ -38,8 +37,8 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-    const API_KEY = "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"; // ← PASTE YOUR **NEW** KEY HERE
-    const MODEL = "z-ai/glm-4.5-air:free"; // Confirmed free & good quality
+    const API_KEY = "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"; // ← PASTE YOUR NEWEST KEY HERE
+    const MODEL = "z-ai/glm-4.5-air:free";
 
     let messages = [
       { role: "system", content: "You are a helpful, friendly, and intelligent AI assistant." }
@@ -143,7 +142,7 @@
 
       } catch (err) {
         console.error(err);
-        addMsg("assistant", `Error: ${err.message}\n\nQuick fixes:\n1. Use a **NEW** API key (generate at openrouter.ai/keys)\n2. Try model: tngtech/deepseek-r1t2-chimera:free or arcee-ai/trinity-large-preview:free\n3. Test in incognito or different network/VPN`, true);
+        addMsg("assistant", `Error: ${err.message}\n\nTry:\n1. New key from openrouter.ai/keys\n2. Test in browser console (see instructions)\n3. VPN (USA/EU) + new key`, true);
       } finally {
         hideTyping();
         sendBtn.disabled = false;
@@ -160,7 +159,7 @@
       }
     };
 
-    addMsg("assistant", "Hello! This chat uses **GLM-4.5-Air (free)** — fast and smart.\nPaste your **new** API key above and try sending a message! 🚀");
+    addMsg("assistant", "Hi! Paste your **new API key** above and try sending a message.\nIf still error → try VPN or test key in console.");
   </script>
 </body>
 </html>
