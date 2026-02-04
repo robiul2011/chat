@@ -1,165 +1,370 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Chat - GLM-4.5-Air (Free)</title>
-  <style>
-    body { margin:0; font-family:system-ui,sans-serif; background:linear-gradient(135deg,#e0f2fe,#dbeafe); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:16px; color:#111827; }
-    .container { width:100%; max-width:880px; height:92vh; background:white; border-radius:24px; box-shadow:0 12px 40px rgba(0,0,0,0.15); overflow:hidden; display:flex; flex-direction:column; }
-    .header { background:#2563eb; color:white; padding:18px 24px; font-size:1.4rem; font-weight:600; text-align:center; }
-    .chat { flex:1; padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:18px; }
-    .msg { max-width:82%; padding:14px 20px; border-radius:22px; line-height:1.5; font-size:1.05rem; }
-    .user-msg { align-self:flex-end; background:#bfdbfe; color:#1e40af; border-bottom-right-radius:6px; }
-    .ai-msg { align-self:flex-start; background:#f3f4f6; color:#111827; border-bottom-left-radius:6px; }
-    .error-msg { align-self:center; background:#fee2e2; color:#b91c1c; padding:14px 22px; border-radius:14px; font-weight:500; max-width:90%; white-space:pre-wrap; }
-    .typing { align-self:flex-start; color:#6b7280; font-style:italic; padding:14px 20px; }
-    .input-area { padding:18px 24px; border-top:1px solid #e5e7eb; background:white; display:flex; gap:14px; }
-    #input { flex:1; padding:14px 20px; border:1px solid #d1d5db; border-radius:9999px; font-size:1.05rem; outline:none; }
-    #input:focus { border-color:#2563eb; box-shadow:0 0 0 4px rgba(37,99,235,0.15); }
-    #send { padding:14px 34px; background:#2563eb; color:white; border:none; border-radius:9999px; font-weight:600; cursor:pointer; }
-    #send:hover:not(:disabled) { background:#1d4ed8; }
-    #send:disabled { background:#93c5fd; cursor:not-allowed; }
-    .chat::-webkit-scrollbar { width:8px; }
-    .chat::-webkit-scrollbar-thumb { background:#9ca3af; border-radius:4px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">AI Chat - GLM-4.5-Air (Free)</div>
-    <div class="chat" id="chat"></div>
-    <div class="input-area">
-      <input id="input" type="text" placeholder="Ask anything..." autocomplete="off"/>
-      <button id="send">Send</button>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script>
-    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-    const API_KEY = "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"; // ← PASTE YOUR NEWEST KEY HERE
-    const MODEL = "z-ai/glm-4.5-air:free";
-
-    let messages = [
-      { role: "system", content: "You are a helpful, friendly, and intelligent AI assistant." }
-    ];
-
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("input");
-    const sendBtn = document.getElementById("send");
-
-    function addMsg(role, content, isError = false) {
-      const div = document.createElement("div");
-      div.className = `msg ${role === "user" ? "user-msg" : "ai-msg"} ${isError ? "error-msg" : ""}`;
-      div.innerHTML = isError ? content : marked.parse(content);
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-      return div;
-    }
-
-    let typing = null;
-    function showTyping() {
-      if (typing) return;
-      typing = document.createElement("div");
-      typing.className = "typing";
-      typing.textContent = "AI is thinking...";
-      chat.appendChild(typing);
-      chat.scrollTop = chat.scrollHeight;
-    }
-    function hideTyping() {
-      if (typing) { typing.remove(); typing = null; }
-    }
-
-    async function send() {
-      const text = input.value.trim();
-      if (!text) return;
-
-      sendBtn.disabled = true;
-      input.disabled = true;
-      input.value = "";
-
-      addMsg("user", text);
-      messages.push({ role: "user", content: text });
-
-      showTyping();
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`
-          },
-          body: JSON.stringify({
-            model: MODEL,
-            messages: messages,
-            stream: true
-          })
-        });
-
-        if (!res.ok) {
-          let err = await res.text();
-          try { err = JSON.parse(err).error?.message || err; } catch {}
-          throw new Error(`API error (${res.status}): ${err}`);
-        }
-
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let aiText = "";
-        let aiDiv = null;
-
-        hideTyping();
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          const lines = chunk.split("\n").filter(l => l.trim());
-
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const data = line.slice(6);
-              if (data === "[DONE]") continue;
-              try {
-                const parsed = JSON.parse(data);
-                const delta = parsed.choices?.[0]?.delta?.content;
-                if (delta) {
-                  aiText += delta;
-                  if (!aiDiv) {
-                    aiDiv = addMsg("assistant", aiText);
-                  } else {
-                    aiDiv.innerHTML = marked.parse(aiText);
-                  }
-                  chat.scrollTop = chat.scrollHeight;
-                }
-              } catch {}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Universal AI Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {}
             }
-          }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
+    <style>
+        .prose pre {
+            background-color: #f3f4f6;
+            overflow-x: auto;
+            padding: 1em;
+            border-radius: 0.375rem;
+        }
+        .prose code {
+            font-family: monospace;
+        }
+        .dark .prose pre {
+            background-color: #1f2937;
+        }
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
+    <div id="loading" class="flex justify-center items-center h-screen">Loading App...</div>
+    <div id="app" class="hidden flex flex-col min-h-screen">
+        <header class="bg-white dark:bg-gray-900 p-4 flex items-center border-b border-gray-200 dark:border-gray-700">
+            <button id="sidebarToggle" class="md:hidden mr-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <span id="chatTitle" class="flex-1 font-semibold">Universal AI Chat</span>
+            <button id="darkModeToggle" class="mx-2">
+                <svg class="w-6 h-6 sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <svg class="w-6 h-6 moon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+            <button id="settingsButton" class="ml-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4M12 18v2m0-2a2 2 0 100-4m0 4a2 2 0 110-4M12 12a2 2 0 100-4m0 4a2 2 0 110 4"></path></svg>
+            </button>
+        </header>
+        <div class="flex flex-1 overflow-hidden">
+            <aside id="sidebar" class="w-64 bg-gray-100 dark:bg-gray-800 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out absolute md:relative h-full z-20 md:z-auto">
+                <div class="p-4">
+                    <button id="newChatButton" class="w-full bg-blue-500 text-white py-2 px-4 rounded">New Chat</button>
+                </div>
+                <ul id="chatList" class="p-4 space-y-2"></ul>
+            </aside>
+            <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 hidden md:hidden z-10" onclick="toggleSidebar()"></div>
+            <main class="flex-1 flex flex-col">
+                <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+            </main>
+        </div>
+        <div id="inputBar" class="bg-white dark:bg-gray-900 p-4 border-t border-gray-200 dark:border-gray-700 sticky bottom-0">
+            <div class="flex items-end">
+                <textarea id="userInput" rows="1" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-l bg-transparent resize-none overflow-hidden" placeholder="Type your message..."></textarea>
+                <button id="sendButton" class="bg-blue-500 text-white py-2 px-4 rounded-r">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-30">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-96 max-w-full">
+            <h2 class="text-xl font-bold mb-4">Settings</h2>
+            <label class="block mb-2">OpenRouter API Key</label>
+            <input id="apiKeyInput" type="password" class="w-full p-2 border rounded mb-4 bg-transparent">
+            <label class="block mb-2">Model</label>
+            <input id="modelInput" type="text" class="w-full p-2 border rounded mb-4 bg-transparent" value="deepseek/deepseek-r1:free">
+            <label class="block mb-2">System Prompt (for this chat)</label>
+            <textarea id="systemPromptInput" rows="4" class="w-full p-2 border rounded mb-4 bg-transparent"></textarea>
+            <div class="flex justify-end">
+                <button id="saveSettings" class="bg-blue-500 text-white py-2 px-4 rounded mr-2">Save</button>
+                <button id="closeSettings" class="bg-gray-300 dark:bg-gray-700 py-2 px-4 rounded">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        const loading = document.getElementById('loading');
+        const app = document.getElementById('app');
+        app.classList.remove('hidden');
+        loading.classList.add('hidden');
+
+        // Elements
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const chatTitle = document.getElementById('chatTitle');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const settingsButton = document.getElementById('settingsButton');
+        const newChatButton = document.getElementById('newChatButton');
+        const chatList = document.getElementById('chatList');
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const modelInput = document.getElementById('modelInput');
+        const systemPromptInput = document.getElementById('systemPromptInput');
+        const saveSettings = document.getElementById('saveSettings');
+        const closeSettings = document.getElementById('closeSettings');
+
+        // State
+        let chats = JSON.parse(localStorage.getItem('chats') || '[]');
+        let currentChatId = localStorage.getItem('currentChatId');
+        let apiKey = localStorage.getItem('apiKey') || '';
+        let model = localStorage.getItem('model') || 'deepseek/deepseek-r1:free';
+        let theme = localStorage.getItem('theme') || 'light';
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            darkModeToggle.querySelector('.sun').classList.add('hidden');
+            darkModeToggle.querySelector('.moon').classList.remove('hidden');
         }
 
-        if (aiText) messages.push({ role: "assistant", content: aiText });
+        // Functions
+        function getCurrentChat() {
+            return chats.find(c => c.id === currentChatId) || null;
+        }
 
-      } catch (err) {
-        console.error(err);
-        addMsg("assistant", `Error: ${err.message}\n\nTry:\n1. New key from openrouter.ai/keys\n2. Test in browser console (see instructions)\n3. VPN (USA/EU) + new key`, true);
-      } finally {
-        hideTyping();
-        sendBtn.disabled = false;
-        input.disabled = false;
-        input.focus();
-      }
-    }
+        function saveState() {
+            localStorage.setItem('chats', JSON.stringify(chats));
+            localStorage.setItem('currentChatId', currentChatId);
+            localStorage.setItem('apiKey', apiKey);
+            localStorage.setItem('model', model);
+            localStorage.setItem('theme', theme);
+        }
 
-    sendBtn.onclick = send;
-    input.onkeypress = e => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        send();
-      }
-    };
+        function newChat() {
+            const id = Date.now().toString();
+            chats.push({ id, name: `Chat ${chats.length + 1}`, systemPrompt: '', messages: [] });
+            switchToChat(id);
+        }
 
-    addMsg("assistant", "Hi! Paste your **new API key** above and try sending a message.\nIf still error → try VPN or test key in console.");
-  </script>
+        function switchToChat(id) {
+            currentChatId = id;
+            renderSidebar();
+            renderMessages();
+            updateChatTitle();
+            saveState();
+            toggleSidebar(false);
+        }
+
+        function updateChatTitle() {
+            const current = getCurrentChat();
+            chatTitle.textContent = current ? current.name : 'Universal AI Chat';
+        }
+
+        function renderSidebar() {
+            chatList.innerHTML = '';
+            chats.forEach(chat => {
+                const li = document.createElement('li');
+                const button = document.createElement('button');
+                button.className = `w-full text-left py-2 px-4 rounded ${chat.id === currentChatId ? 'bg-blue-100 dark:bg-blue-900' : ''}`;
+                button.onclick = () => switchToChat(chat.id);
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = chat.name;
+                nameSpan.className = 'flex-1';
+                const editButton = document.createElement('button');
+                editButton.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
+                editButton.onclick = (e) => {
+                    e.stopPropagation();
+                    const input = document.createElement('input');
+                    input.value = chat.name;
+                    input.className = 'w-full p-1 border rounded';
+                    input.onblur = () => {
+                        chat.name = input.value || 'Untitled Chat';
+                        renderSidebar();
+                        updateChatTitle();
+                        saveState();
+                    };
+                    input.onkeydown = (e) => { if (e.key === 'Enter') input.blur(); };
+                    button.replaceChild(input, nameSpan);
+                    input.focus();
+                };
+                const deleteButton = document.createElement('button');
+                deleteButton.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>';
+                deleteButton.onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm('Delete this chat?')) {
+                        chats = chats.filter(c => c.id !== chat.id);
+                        if (currentChatId === chat.id) {
+                            if (chats.length) {
+                                switchToChat(chats[0].id);
+                            } else {
+                                newChat();
+                            }
+                        }
+                        renderSidebar();
+                        saveState();
+                    }
+                };
+                button.appendChild(nameSpan);
+                button.appendChild(editButton);
+                button.appendChild(deleteButton);
+                li.appendChild(button);
+                chatList.appendChild(li);
+            });
+        }
+
+        function renderMessages() {
+            chatMessages.innerHTML = '';
+            const current = getCurrentChat();
+            if (current) {
+                current.messages.forEach(msg => {
+                    appendMessage(msg.role, msg.content, false);
+                });
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function appendMessage(role, content, isStreaming = false) {
+            const div = document.createElement('div');
+            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+            const inner = document.createElement('div');
+            inner.className = `max-w-xl p-4 rounded-lg ${role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'}`;
+            if (isStreaming) {
+                inner.textContent = content;
+                inner.classList.add('typing-cursor');
+            } else {
+                inner.innerHTML = marked.parse(content);
+            }
+            div.appendChild(inner);
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return inner;
+        }
+
+        function toggleSidebar(show = null) {
+            const isShown = sidebar.classList.contains('translate-x-0');
+            const shouldShow = show !== null ? show : !isShown;
+            sidebar.classList.toggle('translate-x-0', shouldShow);
+            sidebarOverlay.classList.toggle('hidden', !shouldShow);
+        }
+
+        async function sendMessage() {
+            const input = userInput.value.trim();
+            if (!input) return;
+            if (!apiKey) {
+                openSettings();
+                return;
+            }
+            const current = getCurrentChat();
+            if (!current) return;
+            current.messages.push({ role: 'user', content: input });
+            appendMessage('user', input);
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            const aiMessage = { role: 'assistant', content: '' };
+            current.messages.push(aiMessage);
+            const aiDiv = appendMessage('assistant', '', true);
+            const messages = [];
+            if (current.systemPrompt) {
+                messages.push({ role: 'system', content: current.systemPrompt });
+            }
+            messages.push(...current.messages.map(m => ({ role: m.role, content: m.content })));
+            try {
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: messages,
+                        stream: true
+                    })
+                });
+                if (!response.ok) throw new Error('API error');
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop();
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+                            try {
+                                const parsed = JSON.parse(data);
+                                const delta = parsed.choices[0].delta.content;
+                                if (delta) {
+                                    aiMessage.content += delta;
+                                    aiDiv.textContent = aiMessage.content;
+                                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                                }
+                            } catch {}
+                        }
+                    }
+                }
+                aiDiv.classList.remove('typing-cursor');
+                aiDiv.innerHTML = marked.parse(aiMessage.content);
+                saveState();
+            } catch (error) {
+                aiMessage.content = 'Error: ' + error.message;
+                aiDiv.textContent = aiMessage.content;
+                aiDiv.classList.remove('typing-cursor');
+            }
+        }
+
+        function openSettings() {
+            apiKeyInput.value = apiKey;
+            modelInput.value = model;
+            const current = getCurrentChat();
+            systemPromptInput.value = current ? current.systemPrompt : '';
+            settingsModal.classList.remove('hidden');
+        }
+
+        // Event Listeners
+        sidebarToggle.onclick = () => toggleSidebar();
+        newChatButton.onclick = newChat;
+        sendButton.onclick = sendMessage;
+        userInput.oninput = () => {
+            userInput.style.height = 'auto';
+            userInput.style.height = userInput.scrollHeight + 'px';
+        };
+        userInput.onkeydown = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        };
+        darkModeToggle.onclick = () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            theme = isDark ? 'dark' : 'light';
+            darkModeToggle.querySelector('.sun').classList.toggle('hidden', isDark);
+            darkModeToggle.querySelector('.moon').classList.toggle('hidden', !isDark);
+            saveState();
+        };
+        settingsButton.onclick = openSettings;
+        closeSettings.onclick = () => settingsModal.classList.add('hidden');
+        saveSettings.onclick = () => {
+            apiKey = apiKeyInput.value;
+            model = modelInput.value;
+            const current = getCurrentChat();
+            if (current) current.systemPrompt = systemPromptInput.value;
+            settingsModal.classList.add('hidden');
+            saveState();
+        };
+
+        // Init
+        if (!chats.length) newChat();
+        if (!currentChatId || !getCurrentChat()) currentChatId = chats[0].id;
+        if (!apiKey) openSettings();
+        renderSidebar();
+        renderMessages();
+        updateChatTitle();
+        saveState();
+    </script>
 </body>
 </html>
